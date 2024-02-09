@@ -18,18 +18,17 @@ class PostController extends Controller
         // 1. with('namaRelation:id,username')
         // ketika kita menggukana with() di return kita tidak pelu menggunakan loadmissing()
         // writer adalah relation dari model Post ke Model User
-        $post = Post::with('writer:id,username')->get();
+        // $post = Post::with('writer:id,username')->get();
 
         // tanpa menggunakan loadmissing()
-        return PostDetailResource::collection($post);
+        // return PostDetailResource::collection($post);
 
         // tanpa menggunakan with()
-        // $post = Post::all();
+        $post = Post::all();
 
         // 2. loadmissing('namaRelation:id,username')
         // ketika kita menggukana loadmissing maka di $post tidak perlu menggunakan with()
-        // return PostDetailResource::collection($post->loadmissing('writer:id,username'));
-
+        return PostDetailResource::collection($post->loadmissing('writer:id,username'));
 
     }
 
@@ -76,7 +75,30 @@ class PostController extends Controller
 
     public function update(Request $request, Post $post)
     {
-        dd($post->id);
+        $validate = Validator::make($request->all(), [
+            'title' => 'required',
+            'news_content' => 'required',
+        ]);
+
+        if ($validate->fails()) {
+            return response()->json($validate->errors(), 400);
+
+        }
+
+        $post = Post::findOrFail($post->id);
+        $post->update($request->all());
+
+        return new PostDetailResource($post->loadmissing('writer:id,username'));
+
+
+    }
+
+    public function destroy(Post $post)
+    {
+        $post = Post::findOrFail($post->id);
+        $post->delete();
+
+        return new PostDetailResource($post->loadmissing('writer:id,username'));
     }
 }
 

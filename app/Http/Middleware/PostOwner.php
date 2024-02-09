@@ -27,12 +27,9 @@ class PostOwner
         // jika author != user id yang sedang login
         if($post->author != $currentUser->id){
             return response()->json([
-                'message' => 'Data nit found'
-            ]);
+                'message' => 'Data not found'
+            ],404);
         }
-
-
-        // return response()->json($post);
 
         return $next($request);
     }

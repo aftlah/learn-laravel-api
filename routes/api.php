@@ -25,8 +25,11 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 // Route Group
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('logout', [AuthController::class, 'logout']);
+
     Route::post('posts', [PostController::class, 'store']);
-    Route::patch('/posts/{post}', [PostController::class,'update'])->middleware('postOwner');
+    Route::patch('posts/{post}', [PostController::class,'update'])->middleware('postOwner');
+    Route::delete('posts/{post}', [PostController::class,'destroy'])->middleware('postOwner');
+
 
     // untuk menetahui siapa yang sedah login
     Route::get('me', [AuthController::class, 'me']);
@@ -34,10 +37,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
 
 Route::controller(PostController::class)->group(function () {
-    Route::get('/posts', 'index');
-    Route::get('/posts/{post}', 'show');
-    // Route::post('/posts', 'store');
-    Route::delete('/posts/{post}', 'destroy');
+    Route::get('posts', 'index');
+    Route::get('posts/{post}', 'show');
 });
 // Route::apiResource('posts', PostController::class);
 
