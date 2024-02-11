@@ -2,13 +2,13 @@
 
 namespace App\Http\Middleware;
 
-use App\Models\Post;
+use App\Models\Comment;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
-class PostOwner
+class CommentOwner
 {
     /**
      * Handle an incoming request.
@@ -17,20 +17,16 @@ class PostOwner
      */
     public function handle(Request $request, Closure $next): Response
     {
-        
-        // mengambil id post yang dikirim melalui request
-        $post = Post::findOrFail($request->post->id);
 
-        // mengambil id user yang sedang login
-        $currentUser = Auth::user();
+        // dd($comment->user_id);
+        $user = Auth::user();
+        $comment = Comment::findOrFail($request->id);
 
-        // jika author != user id yang sedang login
-        if($post->author != $currentUser->id){
+        if($user->id != $comment->user_id){
             return response()->json([
                 'message' => 'Data not found'
             ],404);
-        }
-
+        };
         return $next($request);
     }
 }

@@ -8,7 +8,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 class PostDetailResource extends JsonResource
 {
 
-    
+
     /**
      * Transform the resource into an array.
      *
@@ -31,6 +31,22 @@ class PostDetailResource extends JsonResource
             // 'writer' => $this->writer
             // walaupun di controller tidak memaggil relasi model / with(namaModel), tapi ketika kita melakukan request tetap akan memanggil relasi, ini kurang efektif
             // jadi lebih baik kita menggunakan eager load,
+
+            // ini adalah cara untuk menampilkan nama orang yang komen di bagian post
+
+            'comments' => $this->whenLoaded('comments', function () {
+                // fungsi collect yaitu untuk mengolah data array
+                // Fungsi each  adalah metode untuk melakukan iterasi atau pengulangan pada setiap elemen dalam kumpulan data (collection) dengan menerapkan suatu closure atau fungsi yang ditentukan ke setiap elemen tersebut.
+                return collect($this->comments)->each(function($comment) {
+                    $comment->commentator;
+                    return $comment;
+                });
+            }),
+
+            // untuk mengetahui total / menghuting comment di postingan tersebut
+            'comment_total' => $this->whenloaded('comments', function () {
+                return $this->comments->count();
+            }),
         ];
     }
 }

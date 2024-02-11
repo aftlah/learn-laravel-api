@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CommentController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -22,7 +23,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 
-// Route Group
+// Route Middleware Group
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('logout', [AuthController::class, 'logout']);
 
@@ -30,12 +31,16 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::patch('posts/{post}', [PostController::class,'update'])->middleware('postOwner');
     Route::delete('posts/{post}', [PostController::class,'destroy'])->middleware('postOwner');
 
-
     // untuk menetahui siapa yang sedah login
     Route::get('me', [AuthController::class, 'me']);
+
+    // Route Comment
+    Route::post('comment',[CommentController::class,'store']);
+    Route::patch('comment/{id}',[CommentController::class,'update'])->middleware('CommentOwner');
+    Route::delete('comment/{id}',[CommentController::class, 'destroy'])->middleware('CommentOwner');
 });
 
-
+// Route Group PostController
 Route::controller(PostController::class)->group(function () {
     Route::get('posts', 'index');
     Route::get('posts/{post}', 'show');

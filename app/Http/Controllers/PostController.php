@@ -24,11 +24,11 @@ class PostController extends Controller
         // return PostDetailResource::collection($post);
 
         // tanpa menggunakan with()
-        $post = Post::all();
+        $posts = Post::all();
 
         // 2. loadmissing('namaRelation:id,username')
         // ketika kita menggukana loadmissing maka di $post tidak perlu menggunakan with()
-        return PostDetailResource::collection($post->loadmissing('writer:id,username'));
+        return PostDetailResource::collection($posts->loadmissing(['writer:id,username', 'comments:id,post_id,user_id,comment']));
 
     }
 
@@ -37,7 +37,8 @@ class PostController extends Controller
         // writer adalah relation dari model Post ke Model User
         $post = Post::with('writer:id,username')->findOrFail($post->id);
 
-        return new PostDetailResource($post);
+        // return new PostDetailResource($post);
+        return new PostDetailResource($post->loadmissing(['writer:id,username', 'comments:id,post_id,user_id,comment']));
     }
 
     public function store(Request $request)
