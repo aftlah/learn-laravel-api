@@ -7,6 +7,7 @@ use App\Http\Resources\PostResource;
 use App\Models\Post;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
 class PostController extends Controller
@@ -43,16 +44,29 @@ class PostController extends Controller
 
     public function store(Request $request)
     {
-
-        // dd(Auth::user());
+        // dd($request->file('image')->hashName());
         $validated = Validator::make($request->all(), [
             'title' => 'required',
             'news_content' => 'required',
+            // 'image' => 'image|mimes:jpeg,png,jpg,gif|max:2048|file',
         ]);
 
         if ($validated->fails()) {
             return response()->json($validated->errors(), 400);
         }
+
+        // ini cara untuk mencegah undefined jika tidak mengupload image
+        $pathImage = '';
+        if ($request->file('file')) {
+            $fileName = $request->file('file')->hashName();
+            $extension = $request->file('file')->extension();
+            $pathImage = $fileName . '.' . $extension;
+
+            Storage::putFileAs('images', $request->file('file'), $pathImage);
+
+
+        }
+        $request['image'] = $pathImage;
 
         // mengambil author berdasarkan orang yang sedang login
         $request['author'] = Auth::user()->id;
@@ -101,6 +115,9 @@ class PostController extends Controller
 
         return new PostDetailResource($post->loadmissing('writer:id,username'));
     }
+
+
+
 }
 
 

@@ -19,6 +19,7 @@ class PostDetailResource extends JsonResource
         return [
             'id' => $this->id,
             'title' => $this->title,
+            'image' => $this->image,
             'news_content' => $this->news_content,
             'author' => $this->author,
             'created_at' => date_format($this->created_at, 'd-m-Y'),
@@ -37,7 +38,7 @@ class PostDetailResource extends JsonResource
             'comments' => $this->whenLoaded('comments', function () {
                 // fungsi collect yaitu untuk mengolah data array
                 // Fungsi each  adalah metode untuk melakukan iterasi atau pengulangan pada setiap elemen dalam kumpulan data (collection) dengan menerapkan suatu closure atau fungsi yang ditentukan ke setiap elemen tersebut.
-                return collect($this->comments)->each(function($comment) {
+                return collect($this->comments)->each(function ($comment) {
                     $comment->commentator;
                     return $comment;
                 });
